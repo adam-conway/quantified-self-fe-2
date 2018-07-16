@@ -71,6 +71,8 @@
 	var renderData = function renderData(fileName) {
 	  if (fileName === 'foods.html' || fileName === 'foods') {
 	    foodsRequests.getFoods();
+	  } else if (fileName === 'recipes' || fileName === 'recipes.html') {
+	    foodsRequests.getRecipes();
 	  } else {
 	    foodsDiary.getDiaryFoods();
 	    foodsDiary.getMeals();
@@ -316,6 +318,14 @@
 	  });
 	};
 
+	var recipesAPIFetch = function recipesAPIFetch(id, method, body) {
+	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes', {
+	    method: '' + method,
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(body)
+	  });
+	};
+
 	var getFoods = function getFoods() {
 	  foodsAPIFetch('', 'GET').then(function (response) {
 	    return handleResponse(response);
@@ -385,6 +395,16 @@
 	  $('#food-table-info').prepend('<article class="food-item-row food-item-' + food.id + '" data="food-' + food.id + '">\n      <p class="food-item-name" contenteditable="true">' + food.name + '</p>\n      <p class="food-item-calories" contenteditable="true">' + food.calories + '</p>\n      <div class="button-container">\n        <button id="food-item-' + food.id + '" class="food-item-delete-btn" aria-label="Delete">-</button>\n      </div>\n    </article>');
 	};
 
+	var getEachRecipe = function getEachRecipe(recipes) {
+	  recipes.recipes.forEach(function (recipe) {
+	    renderRecipe(recipe);
+	  });
+	};
+
+	var renderRecipe = function renderRecipe(recipe) {
+	  $('.recipes').prepend('<p> Recipe name: ' + recipe.name + '</p>\n    <a href=' + recipe.url + '>Recipe link</a>');
+	};
+
 	var updateFood = function updateFood(id) {
 	  var foodName = $('.food-item-' + id).children()[0].innerText;
 	  var foodCalories = $('.food-item-' + id).children()[1].innerText;
@@ -395,12 +415,24 @@
 	  });
 	};
 
+	var getRecipes = function getRecipes() {
+	  var current_food = window.location.search.split('=')[1];
+	  recipesAPIFetch(current_food, 'GET').then(function (response) {
+	    return handleResponse(response);
+	  }).then(function (recipes) {
+	    return getEachRecipe(recipes);
+	  }).catch(function (error) {
+	    return console.error({ error: error });
+	  });
+	};
+
 	module.exports = {
 	  getFoods: getFoods,
 	  deleteFood: deleteFood,
 	  addNewFood: addNewFood,
 	  updateFood: updateFood,
-	  foodsAPIFetch: foodsAPIFetch
+	  foodsAPIFetch: foodsAPIFetch,
+	  getRecipes: getRecipes
 	};
 
 /***/ }),
