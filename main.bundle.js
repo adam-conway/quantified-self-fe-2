@@ -393,16 +393,80 @@
 
 	var renderFood = function renderFood(food) {
 	  $('#food-table-info').prepend('<article class="food-item-row food-item-' + food.id + '" data="food-' + food.id + '">\n      <p class="food-item-name" contenteditable="true">' + food.name + '</p>\n      <p class="food-item-calories" contenteditable="true">' + food.calories + '</p>\n      <div class="button-container">\n        <button id="food-item-' + food.id + '" class="food-item-delete-btn" aria-label="Delete">-</button>\n      </div>\n    </article>');
-	};
 
-	var getEachRecipe = function getEachRecipe(recipes) {
-	  recipes.recipes.forEach(function (recipe) {
-	    renderRecipe(recipe);
+	  recipesAPIFetch(food.id, 'GET').then(function (response) {
+	    return handleResponse(response);
+	  }).then(function (recipes) {
+	    return addRecipeLinkToFood(recipes, food);
+	  }).catch(function (error) {
+	    return console.error({ error: error });
 	  });
 	};
 
-	var renderRecipe = function renderRecipe(recipe) {
-	  $('.recipes').prepend('<p> Recipe name: ' + recipe.name + '</p>\n    <a href=' + recipe.url + '>Recipe link</a>');
+	var addRecipeLinkToFood = function addRecipeLinkToFood(recipes, food) {
+	  $('.food-item-' + food.id).append('<form action=' + recipes.recipes[0].url + '>\n    <input type="submit" value="See Recipe" />\n    </form>');
+	};
+
+	var getEachRecipe = function getEachRecipe(recipes) {
+	  recipes.recipes.forEach(function (recipe, i) {
+	    renderRecipe(recipe, i);
+	  });
+	};
+
+	function showPageOne() {
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	}
+	function showPageTwo() {
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	}
+	function showPageThree() {
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).show();
+	  $('#recipe-' + i).hide();
+	}
+	function showPageFour() {
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).hide();
+	  $('#recipe-' + i).show();
+	}
+
+	var renderRecipe = function renderRecipe(recipe, i) {
+	  $('.recipes').append('<li id=recipe-' + i + '>\n      <p>Recipe name: ' + recipe.name + '</p>\n      <a href=' + recipe.url + '>Recipe link</a>\n    </li>');
+	  if (i > 2) {
+	    $('#recipe-' + i).hide();
+	  }
 	};
 
 	var updateFood = function updateFood(id) {
@@ -432,7 +496,13 @@
 	  addNewFood: addNewFood,
 	  updateFood: updateFood,
 	  foodsAPIFetch: foodsAPIFetch,
-	  getRecipes: getRecipes
+	  getRecipes: getRecipes,
+	  recipesAPIFetch: recipesAPIFetch,
+	  addRecipeLinkToFood: addRecipeLinkToFood,
+	  showPageOne: showPageOne,
+	  showPageTwo: showPageTwo,
+	  showPageThree: showPageThree,
+	  showPageFour: showPageFour
 	};
 
 /***/ }),
@@ -467,6 +537,14 @@
 	var mealsAPIFetch = function mealsAPIFetch(id, method, extension) {
 	  return fetch(baseURL + '/api/v1/meals/' + id + extension, {
 	    method: method
+	  });
+	};
+
+	var recipesAPIFetch = function recipesAPIFetch(id, method, body) {
+	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes', {
+	    method: '' + method,
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(body)
 	  });
 	};
 
@@ -515,6 +593,18 @@
 	var renderFoodToMealTable = function renderFoodToMealTable(meal, food) {
 	  var mealName = meal.name ? meal.name.toLowerCase() : meal;
 	  $('#' + mealName + '-table-info').append('<article class="food-item-row food-item-' + food.id + '" data="food-' + food.id + '">\n      <p class="food-item-name">' + food.name + '</p>\n      <p class="' + mealName + '-food-item-calories">' + food.calories + '</p>\n      <div class="button-container">\n        <button id="food-item-' + food.id + '" class="food-item-delete-btn" data="' + mealName + '-meal" aria-label="Delete">-</button>\n      </div>\n    </article>');
+
+	  recipesAPIFetch(food.id, 'GET').then(function (response) {
+	    return handleResponse(response);
+	  }).then(function (recipes) {
+	    return addRecipeLinkToFood(recipes, food, mealName);
+	  }).catch(function (error) {
+	    return console.error({ error: error });
+	  });
+	};
+
+	var addRecipeLinkToFood = function addRecipeLinkToFood(recipes, food, mealName) {
+	  $('#' + mealName + '-table-info .food-item-' + food.id).prepend('<form action=' + recipes.recipes[0].url + '>\n    <input type="submit" value="See Recipe" />\n    </form>');
 	};
 
 	var handleResponse = function handleResponse(response) {
