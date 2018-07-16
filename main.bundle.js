@@ -414,7 +414,7 @@
 	  if (host === "localhost" || host === "127.0.0.1") {
 	    return "http://localhost:3000";
 	  } else {
-	    return "https://radiant-bastion-95270.herokuapp.com";
+	    return "https://protected-waters-38963.herokuapp.com";
 	  }
 	};
 
@@ -475,9 +475,11 @@
 	};
 
 	var populateMealTable = function populateMealTable(meal) {
-	  meal.foods.forEach(function (food) {
-	    return renderFoodToMealTable(meal, food);
-	  });
+	  if (meal.Foods === null) {} else {
+	    meal.Foods.forEach(function (food) {
+	      return renderFoodToMealTable(meal, food);
+	    });
+	  }
 	};
 
 	var renderFoodToMealTable = function renderFoodToMealTable(meal, food) {
