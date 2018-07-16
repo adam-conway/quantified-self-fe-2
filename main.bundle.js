@@ -475,11 +475,9 @@
 	};
 
 	var populateMealTable = function populateMealTable(meal) {
-	  if (meal.Foods === null) {} else {
-	    meal.Foods.forEach(function (food) {
-	      return renderFoodToMealTable(meal, food);
-	    });
-	  }
+	  meal.foods.forEach(function (food) {
+	    return renderFoodToMealTable(meal, food);
+	  });
 	};
 
 	var renderFoodToMealTable = function renderFoodToMealTable(meal, food) {
